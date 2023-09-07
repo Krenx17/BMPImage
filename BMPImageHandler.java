@@ -1,5 +1,7 @@
 import java.io.*;
 
+//Primera Parte
+
 public class BMPImageHandler {
     public static void main(String[] args) throws Exception {
         String opt = args[0];
