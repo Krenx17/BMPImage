@@ -1,8 +1,6 @@
 import java.io.*;
 
-//Primera Parte
-
-public class BMPImageHandler {
+public class BmpImageHandler {
     public static void main(String[] args) throws Exception {
         String opt = args[0];
         String file = args[1];
