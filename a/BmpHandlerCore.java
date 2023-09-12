@@ -1,4 +1,4 @@
-public class BmpHandlerCore {
+public class BmpHandlerCore{
     public static void img(String img) throws Exception {
         BmpHandlerImgeData.image(img, "red");
         BmpHandlerImgeData.image(img, "green");
