@@ -34,12 +34,14 @@ public class BmpHandlerNewImage {
             initData = convertInt(header[10], header[11], header[12], header[13]);
             width = convertInt(header[18], header[19], header[20], header[21]);
             height = convertInt(header[22], header[23], header[24], header[25]);
+            
             if (opt.equals("flat")) {
-                width = width/2;
-            } else if (opt.equals("thin")) {
                 height = height/2;
+                
+            } else if (opt.equals("thin")) {
+                width = width/2;
             }
-
+            
             //Set dimension for Arrays
             newImage = new int[height][width];
             imagen = new int[(width*height*3)+54];
@@ -86,10 +88,16 @@ public class BmpHandlerNewImage {
                             newImage[h][w] = convertInt(b, g, r);
                             break;
                         case "thin":
-                            //
+                            newImage = new int [height][width];
+                            if (h % 2 == 0){
+                                newImage [h][w] = convertInt(b, g, r);;                                
+                            }
                             break;
                         case "flat":
-                            //
+                            newImage = new int [height][width];
+                            if (w % 2 == 0) {
+                                newImage [h][w] = convertInt(b, g, r); 
+                            }  
                             break;
                     }
                 }
