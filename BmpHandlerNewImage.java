@@ -41,7 +41,7 @@ public class BmpHandlerNewImage {
             }
 
             //Set dimension for Arrays
-            newImage = new int[width][height];
+            newImage = new int[height][width];
             imagen = new int[(width*height*3)+54];
 
             option(opt);
@@ -54,42 +54,42 @@ public class BmpHandlerNewImage {
         FileInputStream fis = new FileInputStream(name+".bmp");
         
         try (fis) {
-            for (int w = 0; w < width; w++) {
-                for (int h = 0; h < height; h++) {
+            for (int h = 0; h < height; h++) {
+                for (int w = 0; w < width; w++) {
                     int b = fis.read();
                     int g = fis.read();
                     int r = fis.read();
                     switch (opt) {
                         case "red":
-                        int red = convertInt(0, 0, r);
-                        newImage[w][h] = red;
+                            int red = convertInt(0, 0, r);
+                            newImage[h][w] = red;
                             break;
                         case "green":
-                        int green = convertInt(0, g, 0);
-                        newImage[w][h] = green;
+                            int green = convertInt(0, g, 0);
+                            newImage[h][w] = green;
                             break;
                         case "blue":
-                        int blue = convertInt(b, 0, 0);
-                        newImage[w][h] = blue;
+                            int blue = convertInt(b, 0, 0);
+                            newImage[h][w] = blue;
                             break;
                         case "sepia":
-                        int newRed = (int) (0.393*r + 0.769*g + 0.189*b);
-                        int newGreen = (int) (0.349*r + 0.686*g + 0.168*b);
-                        int newBlue = (int) (0.272*r + 0.534*g + 0.131*b); 
-                        int sepia = convertInt(newBlue, newGreen, newRed);
-                        newImage[w][h] = sepia;
+                            int newRed = (int) (0.393*r + 0.769*g + 0.189*b);
+                            int newGreen = (int) (0.349*r + 0.686*g + 0.168*b);
+                            int newBlue = (int) (0.272*r + 0.534*g + 0.131*b); 
+                            int sepia = convertInt(newBlue, newGreen, newRed);
+                            newImage[h][w] = sepia;
                             break;
                         case "hrotation":
-                            
+                            newImage[h][w] = convertInt(b, g, r);
                             break;
                         case "vrotation":
-                            
+                            newImage[h][w] = convertInt(b, g, r);
                             break;
                         case "thin":
-                            
+                            //
                             break;
                         case "flat":
-                            
+                            //
                             break;
                     }
                 }
@@ -112,13 +112,38 @@ public class BmpHandlerNewImage {
             for (int x = 0; x < 54; x++) {
                 imagen[x] = header[x];
             }
-            for (int w = 0; w < width; w++) {
+            if (opt.equals("red") || opt.equals("blue") || opt.equals("green") || opt.equals("sepia")) {
                 for (int h = 0; h < height; h++) {
-                    int rgb = newImage[w][h];
-                    imagen[initData] = ((rgb>>16) & 0xff);
-                    imagen[initData+2] = ((rgb>>8) & 0xff);
-                    imagen[initData+1] = (rgb & 0xff);
-                    initData +=3;
+                    for (int w = 0; w < width; w++) {
+                        int rgb = newImage[h][w];
+                        imagen[initData] = ((rgb>>16) & 0xff);
+                        imagen[initData+2] = ((rgb>>8) & 0xff);
+                        imagen[initData+1] = (rgb & 0xff);
+                        initData +=3;
+                    }
+                }
+            }
+            if(opt.equals("vrotation") || opt.equals("hrotation")){
+                if (opt.equals("vrotation")) {
+                    for (int h = 0; h < height; h++) {
+                        for (int w = width-1; 0 < w; w--) {
+                            int rgb = newImage[h][w];
+                            imagen[initData] = ((rgb>>16) & 0xff);
+                            imagen[initData+2] = ((rgb>>8) & 0xff);
+                            imagen[initData+1] = (rgb & 0xff);
+                            initData +=3;
+                        }
+                    }
+                } else {
+                    for (int h = height-1; 0 < h; h--) {
+                        for (int w = 0; w < width; w++) {
+                            int rgb = newImage[h][w];
+                            imagen[initData] = ((rgb>>16) & 0xff);
+                            imagen[initData+2] = ((rgb>>8) & 0xff);
+                            imagen[initData+1] = (rgb & 0xff);
+                            initData +=3;
+                        }
+                    }
                 }
             }
             for (int x = 0; x < imagen.length ; x++) {
