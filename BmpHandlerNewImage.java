@@ -34,14 +34,12 @@ public class BmpHandlerNewImage {
             initData = convertInt(header[10], header[11], header[12], header[13]);
             width = convertInt(header[18], header[19], header[20], header[21]);
             height = convertInt(header[22], header[23], header[24], header[25]);
-            
             if (opt.equals("flat")) {
                 height = height/2;
-                
             } else if (opt.equals("thin")) {
                 width = width/2;
             }
-            
+
             //Set dimension for Arrays
             newImage = new int[height][width];
             imagen = new int[(width*height*3)+54];
@@ -54,7 +52,10 @@ public class BmpHandlerNewImage {
 
     public static void option(String opt) throws IOException {
         FileInputStream fis = new FileInputStream(name+".bmp");
-        
+        for (int i = 0; i < 54; i++) {
+            fis.read();
+        }
+
         try (fis) {
             for (int h = 0; h < height; h++) {
                 for (int w = 0; w < width; w++) {
@@ -88,16 +89,14 @@ public class BmpHandlerNewImage {
                             newImage[h][w] = convertInt(b, g, r);
                             break;
                         case "thin":
-                            newImage = new int [height][width];
-                            if (h % 2 == 0){
-                                newImage [h][w] = convertInt(b, g, r);;                                
-                            }
-                            break;
-                        case "flat":
-                            newImage = new int [height][width];
                             if (w % 2 == 0) {
                                 newImage [h][w] = convertInt(b, g, r); 
-                            }  
+                            }
+                            break;
+                            case "flat":    
+                            if (h % 2 == 0){
+                                newImage [h][w] = convertInt(b, g, r);
+                            }
                             break;
                     }
                 }
@@ -116,29 +115,37 @@ public class BmpHandlerNewImage {
         try {
             FileOutputStream nImage = new FileOutputStream(name+"-"+opt+".bmp");
             int[] header = readHeader(name+".bmp");
-            initData = initData - 1;
             for (int x = 0; x < 54; x++) {
                 imagen[x] = header[x];
             }
-            if (opt.equals("red") || opt.equals("blue") || opt.equals("green") || opt.equals("sepia")) {
-                for (int h = 0; h < height; h++) {
-                    for (int w = 0; w < width; w++) {
-                        int rgb = newImage[h][w];
-                        imagen[initData] = ((rgb>>16) & 0xff);
-                        imagen[initData+2] = ((rgb>>8) & 0xff);
-                        imagen[initData+1] = (rgb & 0xff);
-                        initData +=3;
-                    }
+
+            if (opt.equals("thin") || opt.equals("flat")) {
+                imagen[2] = ((width*height*3) & 0xff);
+                imagen[3] = ((width*height*3)>>8 & 0xff);
+                imagen[4] = ((width*height*3)>>16 & 0xff);
+                imagen[5] = ((width*height*3)>>24 & 0xff);
+
+                if (opt.equals("thin")) {
+                    imagen[18] = (width & 0xff);
+                    imagen[19] = (width>>8 & 0xff);
+                    imagen[20] = (width>>16 & 0xff);
+                    imagen[21] = (width>>24 & 0xff);
+                } else {
+                    imagen[22] = (height & 0xff);
+                    imagen[23] = (height>>8 & 0xff);
+                    imagen[24] = (height>>16 & 0xff);
+                    imagen[25] = (height>>24 & 0xff);
                 }
             }
+
             if(opt.equals("vrotation") || opt.equals("hrotation")){
                 if (opt.equals("vrotation")) {
                     for (int h = 0; h < height; h++) {
                         for (int w = width-1; 0 < w; w--) {
                             int rgb = newImage[h][w];
-                            imagen[initData] = ((rgb>>16) & 0xff);
-                            imagen[initData+2] = ((rgb>>8) & 0xff);
-                            imagen[initData+1] = (rgb & 0xff);
+                            imagen[initData] = (rgb & 0xff);
+                            imagen[initData+1] = (rgb>>8 & 0xff);
+                            imagen[initData+2] = (rgb>>16 & 0xff);
                             initData +=3;
                         }
                     }
@@ -146,11 +153,21 @@ public class BmpHandlerNewImage {
                     for (int h = height-1; 0 < h; h--) {
                         for (int w = 0; w < width; w++) {
                             int rgb = newImage[h][w];
-                            imagen[initData] = ((rgb>>16) & 0xff);
-                            imagen[initData+2] = ((rgb>>8) & 0xff);
-                            imagen[initData+1] = (rgb & 0xff);
+                            imagen[initData] = (rgb & 0xff);
+                            imagen[initData+1] = (rgb>>8 & 0xff);
+                            imagen[initData+2] = (rgb>>16 & 0xff);
                             initData +=3;
                         }
+                    }
+                }
+            } else {
+                for (int h = 0; h < height; h++) {
+                    for (int w = 0; w < width; w++) {
+                        int rgb = newImage[h][w];
+                        imagen[initData] = (rgb & 0xff);
+                        imagen[initData+1] = (rgb>>8 & 0xff);
+                        imagen[initData+2] = (rgb>>16 & 0xff);
+                        initData +=3;
                     }
                 }
             }
