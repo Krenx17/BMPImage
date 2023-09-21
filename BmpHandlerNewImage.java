@@ -149,6 +149,7 @@ public class BmpHandlerNewImage {
                             initData +=3;
                         }
                     }
+                    
                 } else {
                     for (int h = height-1; 0 < h; h--) {
                         for (int w = 0; w < width; w++) {
