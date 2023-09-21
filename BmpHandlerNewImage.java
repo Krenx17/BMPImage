@@ -52,11 +52,12 @@ public class BmpHandlerNewImage {
 
     public static void option(String opt) throws IOException {
         FileInputStream fis = new FileInputStream(name+".bmp");
+        //Salta los bits del header
         for (int i = 0; i < 54; i++) {
             fis.read();
         }
-
         try (fis) {
+            //Menu de opciones
             for (int h = 0; h < height; h++) {
                 for (int w = 0; w < width; w++) {
                     int b = fis.read();
@@ -119,6 +120,7 @@ public class BmpHandlerNewImage {
                 imagen[x] = header[x];
             }
 
+            //Cambia ancho o alto de la imagen
             if (opt.equals("thin") || opt.equals("flat")) {
                 imagen[2] = ((width*height*3) & 0xff);
                 imagen[3] = ((width*height*3)>>8 & 0xff);
@@ -138,6 +140,7 @@ public class BmpHandlerNewImage {
                 }
             }
 
+            //Verifica si la opcion es rotación o no
             if(opt.equals("vrotation") || opt.equals("hrotation")){
                 if (opt.equals("vrotation")) {
                     for (int h = 0; h < height; h++) {
